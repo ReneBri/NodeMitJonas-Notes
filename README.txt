@@ -1,1 +1,1 @@
-Just my notes during theory based lessons during my Node.js course.
+Just my notes for more theory based lessons during my Node.js course.
