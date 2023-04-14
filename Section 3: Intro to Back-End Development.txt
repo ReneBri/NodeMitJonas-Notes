@@ -1,0 +1,64 @@
+25. An Overview of How the Web Works 
+
+- What Happens when we access a webpage?
+    You could also ask: what happens when we request data from an api? Same question really.
+        Simple answer is our browser, aka the client sends a request to the server where the webpage is hosted. The server will then send back a response.
+        This is called the request-response model OR client-server architechture
+
+        Every URL (https://www.google.com/maps) is made of three parts. The Protocol (http/https), the domain name (google.com) and the resource (/maps)
+
+        The domain name is not actually the address of the server. We only use a domain name because it is easier to remember than the actual address. The domain name is converted using a DNS or domain name server, which are special servers that act as the phonebook of the internet.
+
+        When we enter a URL the client sends a request to a DNS when then returns the real address of the server. This happens through your internet service provider (ISP).
+
+        The real address actually looks something like this (https://216.58.211.206:443). It still has the Protocol (https) but intead of the domain name it has the IP address and port number attached. Note that the port number does not have anything to do with the resource. The resource actually is sent over in the http request.
+
+        Once we have the real address a TPC/IP socket connection is opened between the client and server, which are now connected. This connection is usually kept alive for the entire time it take to send all of files of the website. TCP mean transmission control protocol and IP stands for internet protocol. Together they are communication protocols which define exactly how data travels across the internet. They are the ones who set the rules about how data moves on the internet.
+
+        A HTTP protocol is a system of rules which allow two or more parties to communicate. HTTP requests are the GET, POST, PATCH, DELETE, etc, requests.
+
+        A HTTP request involves: 
+            The startline: HTTP method + request target + HTTP version (GET /maps HTTP/1.1).
+            
+            HTTP request headers: Content-Type, etc,
+
+            Request body: Only when sending data to the server.
+
+        The difference between HTTP & HTTPS is that HTTPS is encrypted with TLS or SSL which are other encrytion protocols.
+
+        A HTTP response message looks quite similar to the request:     
+            The startline: HTTP version, status code + message (HTTP/1.1 200 OK)
+
+            Headers: Date, Transfer-Encoding, etc --- The difference with response headers is that its actually us, the back-end devs, which set them and send them.
+
+            Response body.
+
+        This back and forth req/res happens for every single file on the website.
+            The first to be loaded is the HTML. It is scanned to see if thres anything else needed, zum beispiel, JS files, css files. Once it sees these are neccessary it sends a request to the server for them ans so on and so forth. Multiple reqs can happen at the same time, but the amount is limited because of speed.
+
+        Once all of these are loaded, they are then rendered in the browser.
+
+        Back to TCP/IP:
+            First, the job of the TCP is to break up to requests and responses into thousands of small chunks called packets before they are sent.
+            Then, once they get to their destination, it will reassamble the packets into the original req or res. This is done so the data can travel as quick as possible. This would not be possible if we sent the website as one big chunk.
+
+            Second, the IP protocol is to send and route all of these packets through the internet. It uses the IP addersses on each packet to make sure they arrive to the correct destination.
+
+
+27. Front-End vs. Back-End Web Development  
+    What is a web server?
+        A basic web server is a computer which hosts a websites files and who also runs a HTTP server which can receive and deliver HTTP protocols.
+
+
+28. Static vs. Dynamic vs. API  
+
+    Static vs. Dynamic website  
+        Static is when the dev uploads the final, ready to be served website files onto the webserver. Usually HTML, css, js, images + more. This means that there is no work done on server/no backend code. 
+
+        Dynamic websites usually contain a database. Then theres also usually an app running which fetches data from the DB then with a predefined template builds each page requested dynamically based on data from the DB.
+
+    API based websites  
+        Includes a DB and an app which fetches data from the DB each time the client requests. The difference is that with an API we only send the data to the browser, not the entire website (sounds like hes describing a React app). In an API based website the building of the website moves from the server to the client. Basically server-side rendering vs client-side rendering.
+
+    API stands for Application Programming Interface.
+
