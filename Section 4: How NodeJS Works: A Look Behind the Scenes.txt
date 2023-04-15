@@ -1,0 +1,64 @@
+30. Node, V8, Libuv and C++
+    The node runtime has several dependencies which are the V8 engine and Libuv.
+    The V8 engine is from google. If it wasn't for V8 Node would have no way of understanding the JS code we write. The V8 engine is what converts JS code to machine code which the computer can understand.
+    That alone isnt enough to create a server-side frankwork like Node. Thats why we have Libuv. Libuv is an open source library with a strong focus on asyncronus i/o. This layer is what gives Node access to the underlying computer OS, file system, networking and more. It also implements event loop and the thread pool, two very important features of Node. The event pool is responsible for handling easy tasks like callbacks and network i/o while the thread pool is for more heavy work like file access or compression.
+    It's important to note that Libux is written completely in C++ and not JS. And V8 uses C++ and JS. The beauty of this is it gives us access to everything available in both the C++ and JS using just JS.
+
+    Node also relies on http-parser for parsing HTTP.
+    c-ares for DNS requests
+    OpenSSL for cryptography and
+    zlib for compression
+    
+
+31. Processes, Threads and the Thread Pool  
+    When we ude node on the computer it means that there is a Node process running on that computer. The process is just a program in execution. In Node we actually have access to a process variable. In that process Node JS runs in a so called single thread. A thread is a sequence of instructions.Node runs in just one thread, which makes it easy to block Node applications. This is unique. If you run Node it will run in just the one thread, wether you have just one user or one million users at the same time. 
+
+    What happens when you start a thread?
+        Initialize application => Execute top level code (code which isnt inside a callback function) => Modules that your apps need are required => Callbacks are registered => Then START EVENT LOOP (This is where most of the work is done on the app. Its the heart of the Node architecture).
+
+        Some tasks are too heavy to be done in the event loop. They would actually block the single thread. So thats where the Thread Pool comes in, which just like the Event Loop is provided to Node by the Libuv library. The Thread Pool provides us 4 (up to 128) extra threads. The event loop can then offload heavy tasks to the Thread Pool. All this happens automatically behind the scenes. The heavy tasks that do get offloaded are all operations that involve files, crytopgraphy, compression, DNS lookups.
+
+
+32. The NodeJS Event Loop 
+    The Event Loop, the heart of Node.js architecture.
+
+    The Event Loop is where all the application code which is in the callback function will run (all code which is not top-level code). Some of it will however be offloaded to the Thread Pool. But its the Event Loop which takes care of all this. 
+
+    Node is build around callback functions, so functions that are called as soon as some work is finished sometime in the future. Node works this way because it uses something which is called 'Event Driven Architecture'. Things like a new HTTP request, a timer expiring or a file finishing being read all emmit an event as soon as their done their work. And our event loop will then pick up these event and call the callback functions which are assosiated with these events.
+
+    Events are emmitted => Eventloop picks them up => Callbacks are called
+
+    The Event Loop in detail 
+        When we call our application, the event loop starts running right away.
+        The Event Loop has multiple phases and each phase has a callback queue, which are the callbacks comming from the events that the event loop receives.
+
+        The Event Loop has many phases and each phase has its own callback queue.
+
+        The four most important phases are:     
+            First phase: 
+                "Expired Timer Callbacks" takes care of callbacks from expired timers, such as the setTimeout function. If a time expires later, during the time of one of the other phases, the callback will only be called once the process loops back to this phase. And it works the same way in all four phases. So callbacks in each queue are rocessed one by one until there are no callbacks left in the queue and only then will the event loop enter the next phase.
+            Second phase: 
+                "I/O Polling and Execution of I/O Callbacks". Polling means looking for new I/O events looking to be process and putting them into the callback queue. In the context of a Node Application I/O means mainly things like networking and file access. Its in this phase that typically 99% of our code gets executed.
+            Third phase: 
+                "Set Immediate Callbacks". This is a special timer we use if we want to process calllbacks immediatly after the I/O polling and execution stage. Which is good for special use cases. Not so common.
+            Fourth phase: 
+                We dont need to worry about this too much as its mainly here for completeness but its called "Close Callbacks" Which is for close events, for example when a webserver or websocket shuts down.
+
+            There are two more called the PROCESS.NEXTTICK() QUEUE and the OTHER MICROTASKS QUEUE (resolved promises) and if theres anything in these they will get called right after whichever phase is currently running.
+
+            Terminology: 1 tick means 1 cycle of the event loop.
+
+            Node exits by checking if there are any timers or I/O tasks that are still running the the background and if there arent any it will exit the application but if there are it will continue and start the next tick.
+
+        Some high level guidelines not to block code are: 
+            1. Don't use sync versions of functions in fs, crypto and zlib modules in your callback functions 
+
+            2. Don't perform complex calculations e.g. loops in loops etc inside a callback 
+
+            3. Be careful with JSON in large objects 
+
+            4. Don't use too comples REGEX
+
+        
+
+        
