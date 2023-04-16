@@ -60,5 +60,103 @@
             4. Don't use too comples REGEX
 
         
+34. Events and Event-Driven Architecture    
+    HTTP, file system and timers are built around event driven architecture. In Node there are certain objects called Event Emitters, that emmit named events as soon as something important happens in the app. For example: a request hitting a server or a timer expiring or a file finishing to read. These are then picked up by event listeners which we devs set up which fire off callback function attached to each listener. So there is Event emitters and event listeners. This is called the Observer Pattern in JS.
 
+
+36. Introduction to Streaming 
+    Streaming is a fundamental part of Node js. But it is not excludive to Node, more a computer science concept. With streaming we can read and write data peice by peice so we can start processing it before we have recieved the whole thing. This is good for large files/data. Therefore we dont have to keep all the data in memory. Streaming is effecient for both time and memory.
+
+    In Node there are four types of streams: Readable streams, writable streams, duplex streams and transform streams. The first two are the most important streams for us.
+
+    Streams are instances of the EventEmitter class.
+
+    Readable streams:   
+        These are streams which we can read (comsume) data from.
+
+        Examples of these are: 
+            http requests 
+            fs read streams 
+
+        Important events they emmit are:    
+            data 
+            end 
+
+        Important functions include: 
+            pipe()
+            read()
+
+    Writable streams:   
+        These are streams which we can write data into
+
+        Examples of these are: 
+            http responses
+            fs write streams 
+
+        Important events they emmit are:    
+            drain
+            finish
+
+        Important functions include: 
+            write()
+            end()
+
+    Duplex streams:   
+        These are streams which are both readable and writable at the same time
+
+        Examples of these are: 
+            new web socket
+
+    Transform streams:   
+        These are duplex streams that transform data as it is writeen or read
+
+        Examples of these are: 
+            zlib Gzip creation (data compression)
         
+
+38. How Requiring Modules Really Works 
+    In a Node.js module system, each js file is treated as a seperate module.
+
+    The steps go: 
+        Resolving and Loading =>
+        Wrapping => 
+        Execution => 
+        Returning Exports =>
+        Caching. The End.
+
+    Resolving goes like this:   
+        There are three different types of modules:     
+            1. Core modules - require('http');
+            2. Dev modules - require('./foo/bar');
+            3 3rd-party modules - require('express');
+
+        When resolving the paths Node checks for each of these in this order. If none show up for what you typed, it throws an error.
+
+    Wrapping: 
+        After the module is loaded, each module is wrapped in a wrapper function. This function is where the 'require' function comes from: 
+            (function(exports, require, module, __filename, __dirname) {
+                // module code goes here
+            });
+
+        Doing it this way is quite smart as it scopes all of your module code into just the function. Otherwise if it didnt, all of your top level variables would essentially be global variables and clash with eachother.
+
+        So even the main app is also wrapped in one of these wrapper functions. This is why we have access to the require() function. 
+
+        The objects involved in the wrapper function are:   
+            require: a function 
+            module: reference to the current module 
+            exports: a reference to the module.exports, used to export object from a module 
+            __filename: an absolute path to the modules current file 
+            __dirname: directory name of the current module 
+
+    Execution: 
+        This refers to the code wrapped in the wrapper function actually getting executed in the Node runtime.
+
+    Returning Exports: 
+        Require function returns the exports of the required module;
+
+        These exports are stored in the module.exports object(IMPORTANT);
+
+        If you want to export just one thing; A class or a function or a variable USE MODULE.EXPORTS;
+
+        If you're exporting multiple named variables, like multiple functions then you should create these as properties of the export object. Zum beispiel (exports.add = (a, b) => a + b); (exports.subtract = (a, b) => a - b);, etc, etc.
