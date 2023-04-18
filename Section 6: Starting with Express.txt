@@ -1,0 +1,77 @@
+Express Notes:  
+    Express is a minimal Node js framework, providing a higher level of abstraction.
+
+    Express is the most popular Node framework.
+
+    It contains a robust set of features including: complex routing, easier handling of requests and responses, middleware, serverside rendering, etc.
+
+    It allows for fast development of Nodejs applications.
+
+    Express allows us to easily organise our project into the MVC architecture. MVC stands for model view controller..... More on that later.
+
+    It is convention to keep all the Express files inside an app.js.
+
+    One thing to keep in mind when making API's is status codes. See if they change automatically when doing different requests.
+
+    When thinking about using bigger projects think about how we can make all the code look the same.... Always use single quotes, etc.
+
+    Using certain Express methods can automatically set headers such as 'Content-Type' to the correct type. For example using the .json() and sending a regular js object will set the header { 'Content-Type': 'json/application' }.
+
+
+51. A higher level API conversation & REST architecture:
+    API stands for Application Programming Interface. 
+    
+    On a high level, its basically a piece of software which can be used by another piece of software, in order for the applications to talk to eachother. 
+
+    We have been using API's in a web API context but thats not the only form of API there is. The 'Application' part of API can refer to:  
+        Node.js' fs or http APIs('node apis')
+        Browsers DOM JavaScript API 
+        With OOP, when exposing methods to the public, we're creating an API 
+        Basically any modules we create outside of the main app page, could count as an api 
+    
+    REST Architecture:
+        This stands for REpresentational State Transfer.
+
+        This is basically a protocol for building an API, which makes it easy to consume.
+
+        Having a standard like REST makes it easier for us users to comsume this API 
+
+        To build a RESTful API, we need to follow a could of principles: 
+            We need to seperate the API into logical resources 
+            We need to expose structured, resource-based URLs 
+            Use the correct http methods, for example GET or POST etc 
+            Must send data as JSON (usually)
+            Must be stateless??
+
+        Resources: 
+            The key abstraction of information in REST is a resource. Therefor all the data we want to share with the API should be diveded into logical resources. A resource is an object or representation of something, which has data associated to it. Any informatino can be named a resource. For example Tours or Users or Reviews.
+
+        Expose structured, resource based URLs: 
+            You need to make available the data, using some structured URL's that the client can make requests to. For example: https://www.natours.com/addNewTour - The 'addNewUser' here is called the 'endpoint'. This example of an endpoint is a bad example though. WE SHOULD NEVER USE A VERB IN IT. only use '/tours' and then use a POST request on that endpoint. It is common convention not to use the singular such as '/tour'.
+            
+        Use http methods: 
+            GET, POST, PUT, PATCH, DELETE. You know how it goes.
+
+            For actions which are not crud we need to get creative with the endpoints such as search or login.
+
+            Using two resources at the same time: for eample '/getToursByUser' would translate to 'GET /users/3/tours' or 'DELETE /users/3/tours/9'. 
+
+        Send data in JSON: 
+            Not just related to js. 
+            Good for both humans and machines. 
+            All keys in the value pair must be strings.
+            One responds standard is called JSend - this is where you create a js object and add a status value paur declaring wether is susseeded or failed.
+
+        Be Stateless: 
+            In a stateless RESTful API all state is handled on the client and not on the server. This means that each req must contain ALL the info neccessary to process a certain request. The server should NOT have to remember the previous requests.
+
+            Example of state is - loggedin / currentpage.
+
+
+        
+
+
+
+
+
+

@@ -159,4 +159,7 @@
 
         If you want to export just one thing; A class or a function or a variable USE MODULE.EXPORTS;
 
-        If you're exporting multiple named variables, like multiple functions then you should create these as properties of the export object. Zum beispiel (exports.add = (a, b) => a + b); (exports.subtract = (a, b) => a - b);, etc, etc.
+        If you're exporting multiple named variables, like multiple functions then you should create these as properties of the export object. Zum beispiel (exports.add = (a, b) => a + b); (exports.subtract = (a, b) => a - b); etc, etc.
+
+    Caching: 
+        Modules are actually chached after the first time they are loaded. This means that if you require the same module multiple times, it will return the same result and the code in the modules is only executed in the first call. In subsiquent calls the result is simply retreived from the cache.
