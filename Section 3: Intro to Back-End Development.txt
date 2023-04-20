@@ -7,13 +7,13 @@
 
         Every URL (https://www.google.com/maps) is made of three parts. The Protocol (http/https), the domain name (google.com) and the resource (/maps)
 
-        The domain name is not actually the address of the server. We only use a domain name because it is easier to remember than the actual address. The domain name is converted using a DNS or domain name server, which are special servers that act as the phonebook of the internet.
+        The domain name is not the actual the address of the server. We only use a domain name because it is easier to remember than the actual address. The domain name is converted using a DNS or domain name server, which are special servers that act as the phonebook of the internet.
 
-        When we enter a URL the client sends a request to a DNS when then returns the real address of the server. This happens through your internet service provider (ISP).
+        When we enter a URL the client sends a request to a DNS which then returns the real address of the server. This happens through your internet service provider (ISP).
 
         The real address actually looks something like this (https://216.58.211.206:443). It still has the Protocol (https) but intead of the domain name it has the IP address and port number attached. Note that the port number does not have anything to do with the resource. The resource actually is sent over in the http request.
 
-        Once we have the real address a TPC/IP socket connection is opened between the client and server, which are now connected. This connection is usually kept alive for the entire time it take to send all of files of the website. TCP mean transmission control protocol and IP stands for internet protocol. Together they are communication protocols which define exactly how data travels across the internet. They are the ones who set the rules about how data moves on the internet.
+        Once we have the real address a TPC/IP socket connection is opened between the client and server, which are now connected. This connection is usually kept alive for the entire time it take to send all of files of the website. TCP means Transmission Control Protocol and IP stands for internet protocol. Together they are communication protocols which define exactly how data travels across the internet. They are the ones who set the rules about how data moves on the internet.
 
         A HTTP protocol is a system of rules which allow two or more parties to communicate. HTTP requests are the GET, POST, PATCH, DELETE, etc, requests.
 

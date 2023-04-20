@@ -34,7 +34,7 @@ Express Notes:
 
         This is basically a protocol for building an API, which makes it easy to consume.
 
-        Having a standard like REST makes it easier for us users to comsume this API 
+        Having a standard like REST makes it easier for us users to consume this API 
 
         To build a RESTful API, we need to follow a could of principles: 
             We need to seperate the API into logical resources 
@@ -44,7 +44,7 @@ Express Notes:
             Must be stateless??
 
         Resources: 
-            The key abstraction of information in REST is a resource. Therefor all the data we want to share with the API should be diveded into logical resources. A resource is an object or representation of something, which has data associated to it. Any informatino can be named a resource. For example Tours or Users or Reviews.
+            The key abstraction of information in REST is a resource. Therefor all the data we want to share with the API should be divided into logical resources. A resource is an object or representation of something, which has data associated to it. Any informatino can be named a resource. For example Tours or Users or Reviews.
 
         Expose structured, resource based URLs: 
             You need to make available the data, using some structured URL's that the client can make requests to. For example: https://www.natours.com/addNewTour - The 'addNewUser' here is called the 'endpoint'. This example of an endpoint is a bad example though. WE SHOULD NEVER USE A VERB IN IT. only use '/tours' and then use a POST request on that endpoint. It is common convention not to use the singular such as '/tour'.
@@ -52,7 +52,7 @@ Express Notes:
         Use http methods: 
             GET, POST, PUT, PATCH, DELETE. You know how it goes.
 
-            For actions which are not crud we need to get creative with the endpoints such as search or login.
+            For actions which are not CRUD we need to get creative with the endpoints such as search or login.
 
             Using two resources at the same time: for eample '/getToursByUser' would translate to 'GET /users/3/tours' or 'DELETE /users/3/tours/9'. 
 
@@ -60,7 +60,7 @@ Express Notes:
             Not just related to js. 
             Good for both humans and machines. 
             All keys in the value pair must be strings.
-            One responds standard is called JSend - this is where you create a js object and add a status value paur declaring wether is susseeded or failed.
+            One responds standard is called JSend - this is where you create a js object and add a status value pair declaring wether is succeded or failed.
 
         Be Stateless: 
             In a stateless RESTful API all state is handled on the client and not on the server. This means that each req must contain ALL the info neccessary to process a certain request. The server should NOT have to remember the previous requests.
@@ -68,10 +68,29 @@ Express Notes:
             Example of state is - loggedin / currentpage.
 
 
-        
+58. Middleware and the Request-Response Cycle 
+    The essence of Express development is to understand and use the request-response cycle.
 
+    To start the request-response cycle our Express app receives a request when someone hits our server. For which it will then create a request and response object. The client only sends a http/json request from the browser and Express converts that into an object. That data will then be used and processed in order to send back a meaningful response.
 
+    In order to process that req, res object data in Express, we use something called middleware. Middleware is anything that can manipulate these objects. Or really execute any other code what we like. Middleware doesn't always have to be about the req or res object but it is usually mostly about the request.
 
+    It is called middleware because it is software that executes in between this req-res cycle. In Express, EVERYTHING is a middleware, even our route definitions. Setting a http header, a loggin function or body parsing are all examples of middleware.
 
+    In more techincal terms we call all of the middleware which we use together in our app is The Middleware Stack. 
+
+    IMORTANT!!!!! The order of the middleware as they are defined in the stack, is the order they will be executed in the thread. For example a middleware that appears first in the code will be executed before one that appears later. 
+
+    The flow is like this: 
+        Incoming request is sent from client
+        => a request and response object are created by Express
+        => these objects pass through the first declared middleware, after that piece of middleware finishes running, a next() function is called and it is passed to the next piece of middleware. Each peice of middleware has this next() function, the next() is available alongside the (req, res, next) parameters when creating a function.
+        => It does this step by step until we reach the last piece of middleware where instead of next() we should use res.send(). The last middleware function is usually a route handler.
+
+    IMPORTANT! So app.use() applies to a request coming in EVERYTIME a request comes in. app.get(), etc, applies only to a request on a specific route and anything not defined inside any of these runs on the single thread upon begining our instance of Node!
+
+    CODE ORDER MATTERS IN EXPRESS! ONCE THE RESPONSE IS SENT THE CODE STOPS RUNNING!
+
+    Morgan is a logging tool which we will use in our app.
 
 

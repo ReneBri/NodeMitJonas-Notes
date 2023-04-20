@@ -11,7 +11,7 @@
     
 
 31. Processes, Threads and the Thread Pool  
-    When we ude node on the computer it means that there is a Node process running on that computer. The process is just a program in execution. In Node we actually have access to a process variable. In that process Node JS runs in a so called single thread. A thread is a sequence of instructions.Node runs in just one thread, which makes it easy to block Node applications. This is unique. If you run Node it will run in just the one thread, wether you have just one user or one million users at the same time. 
+    When we ude node on the computer it means that there is a Node process running on that computer. The process is just a program in execution. In Node we actually have access to a process variable. In that process Node JS runs in a so called single thread. A thread is a sequence of instructions. Node runs in just one thread, which makes it easy to block Node applications. This is unique. If you run Node it will run in just the one thread, wether you have just one user or one million users at the same time. 
 
     What happens when you start a thread?
         Initialize application => Execute top level code (code which isnt inside a callback function) => Modules that your apps need are required => Callbacks are registered => Then START EVENT LOOP (This is where most of the work is done on the app. Its the heart of the Node architecture).
@@ -24,19 +24,19 @@
 
     The Event Loop is where all the application code which is in the callback function will run (all code which is not top-level code). Some of it will however be offloaded to the Thread Pool. But its the Event Loop which takes care of all this. 
 
-    Node is build around callback functions, so functions that are called as soon as some work is finished sometime in the future. Node works this way because it uses something which is called 'Event Driven Architecture'. Things like a new HTTP request, a timer expiring or a file finishing being read all emmit an event as soon as their done their work. And our event loop will then pick up these event and call the callback functions which are assosiated with these events.
+    Node is built around callback functions, so functions that are called as soon as some work is finished sometime in the future. Node works this way because it uses something which is called 'Event Driven Architecture'. Things like a new HTTP request, a timer expiring or a file finishing being read all emmit an event as soon as their done their work. And our event loop will then pick up these event and call the callback functions which are assosiated with these events.
 
     Events are emmitted => Eventloop picks them up => Callbacks are called
 
     The Event Loop in detail 
         When we call our application, the event loop starts running right away.
-        The Event Loop has multiple phases and each phase has a callback queue, which are the callbacks comming from the events that the event loop receives.
+        The Event Loop has multiple phases and each phase has a callback queue, which are the callbacks coming from the events that the event loop receives.
 
         The Event Loop has many phases and each phase has its own callback queue.
 
         The four most important phases are:     
             First phase: 
-                "Expired Timer Callbacks" takes care of callbacks from expired timers, such as the setTimeout function. If a time expires later, during the time of one of the other phases, the callback will only be called once the process loops back to this phase. And it works the same way in all four phases. So callbacks in each queue are rocessed one by one until there are no callbacks left in the queue and only then will the event loop enter the next phase.
+                "Expired Timer Callbacks" takes care of callbacks from expired timers, such as the setTimeout function. If a time expires later, during the time of one of the other phases, the callback will only be called once the process loops back to this phase. And it works the same way in all four phases. So callbacks in each queue are processed one by one until there are no callbacks left in the queue and only then will the event loop enter the next phase.
             Second phase: 
                 "I/O Polling and Execution of I/O Callbacks". Polling means looking for new I/O events looking to be process and putting them into the callback queue. In the context of a Node Application I/O means mainly things like networking and file access. Its in this phase that typically 99% of our code gets executed.
             Third phase: 
@@ -57,22 +57,22 @@
 
             3. Be careful with JSON in large objects 
 
-            4. Don't use too comples REGEX
+            4. Don't use too complex REGEX
 
         
 34. Events and Event-Driven Architecture    
-    HTTP, file system and timers are built around event driven architecture. In Node there are certain objects called Event Emitters, that emmit named events as soon as something important happens in the app. For example: a request hitting a server or a timer expiring or a file finishing to read. These are then picked up by event listeners which we devs set up which fire off callback function attached to each listener. So there is Event emitters and event listeners. This is called the Observer Pattern in JS.
+    HTTP, file system and timers are built around event driven architecture. In Node there are certain objects called Event Emitters, that emmit named events as soon as something important happens in the app. For example: a request hitting a server or a timer expiring or a file finishing to read. These are then picked up by event listeners, which we devs set up, which fire off callback function attached to each listener. So there is Event emitters and event listeners. This is called the Observer Pattern in JS.
 
 
 36. Introduction to Streaming 
-    Streaming is a fundamental part of Node js. But it is not excludive to Node, more a computer science concept. With streaming we can read and write data peice by peice so we can start processing it before we have recieved the whole thing. This is good for large files/data. Therefore we dont have to keep all the data in memory. Streaming is effecient for both time and memory.
+    Streaming is a fundamental part of Node js. But it is not exclusive to Node, more a computer science concept. With streaming we can read and write data peice by peice so we can start processing it before we have recieved the whole thing. This is good for large files/data. Therefore we dont have to keep all the data in memory. Streaming is effecient for both time and memory.
 
     In Node there are four types of streams: Readable streams, writable streams, duplex streams and transform streams. The first two are the most important streams for us.
 
     Streams are instances of the EventEmitter class.
 
     Readable streams:   
-        These are streams which we can read (comsume) data from.
+        These are streams which we can read (consume) data from.
 
         Examples of these are: 
             http requests 
@@ -138,7 +138,7 @@
                 // module code goes here
             });
 
-        Doing it this way is quite smart as it scopes all of your module code into just the function. Otherwise if it didnt, all of your top level variables would essentially be global variables and clash with eachother.
+        Doing it this way is quite smart as it scopes all of your module code into just to the function. Otherwise if it didnt, all of your top level variables would essentially be global variables and clash with eachother.
 
         So even the main app is also wrapped in one of these wrapper functions. This is why we have access to the require() function. 
 
@@ -155,11 +155,11 @@
     Returning Exports: 
         Require function returns the exports of the required module;
 
-        These exports are stored in the module.exports object(IMPORTANT);
+        These exports are stored in the module.exports object (IMPORTANT);
 
         If you want to export just one thing; A class or a function or a variable USE MODULE.EXPORTS;
 
         If you're exporting multiple named variables, like multiple functions then you should create these as properties of the export object. Zum beispiel (exports.add = (a, b) => a + b); (exports.subtract = (a, b) => a - b); etc, etc.
 
     Caching: 
-        Modules are actually chached after the first time they are loaded. This means that if you require the same module multiple times, it will return the same result and the code in the modules is only executed in the first call. In subsiquent calls the result is simply retreived from the cache.
+        Modules are actually cached after the first time they are loaded. This means that if you require the same module multiple times, it will return the same result and the code in the modules is only executed in the first call. In subsequent calls the result is simply retreived from the cache.
