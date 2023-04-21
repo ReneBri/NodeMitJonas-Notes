@@ -93,4 +93,59 @@ Express Notes:
 
     Morgan is a logging tool which we will use in our app.
 
+    Hnadlers can also be called controllers
 
+62. Creating and Mounting Multiple Routers  
+    Let's say we want to create one seperate router for each of our resources. '/api/v1/tours' and '/api/v1/users'. 
+
+    Before this we used the app.route for both of them. That put both of them on the same router, that being the app object. But if we want to split these into seperate files then the best thing to do is create one router for each of the resourses.
+
+    To declare an individual router we do this: 
+        const tourRouter = express.Router();
+
+    express.Router returns a new router object. This object is actually middleware.
+
+    Then to use that router we must tell our app to use it... suprisingly enough: 
+        app.use('/api/v1/tours', tourRouter);
+
+    Then once that is declared we change the app.route('/api/v1/tours') to tourRouter.route('/').get(getAllTours); etc.
+
+    We declare them in this order: 
+        1. const tourRouter = express.Router();
+        2. tourRouter.route('/').etc()
+        3. app.use('/api/v1/tours', tourRouter)
+
+    We declare them in this order because the first piece of code the request actually hits is the app.use. So if we do not declare these other routes/functions/objects before calling this app.use() method, an error will be thrown.
+
+    Step 3 - using the app.use() to call the router is called mounting a router.
+
+    Doing this basically creates a sub-application for each of these resourses.
+
+    Also, we should create a server.js file. That is where our application starts and then everythin that has to do with the middleware goes into the app.js 
+
+    So for this project so far he just has us use the app.listen in the server file and we export the app from the app.js BUT other things we keep in there, which are not related to express but still related to our application are: database configs, error handling stuff or environment variables.
+
+    The server file looks like this: 
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    const app = require('./app');
+
+    const port = 3000;
+
+    app.listen(port, () => {
+        console.log(`App now listening on port ${port}`);
+    });
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    After this the root file of our app has now changed from app.js to server.js. So run Nodemon accordingly or set up an npm script. 
+
+    The request flow now goes like this: 
+        server.js => 
+        app.js => 
+        hits the router => 
+        goes through controllers => 
+        ends with send from the controllers.
+
+    
