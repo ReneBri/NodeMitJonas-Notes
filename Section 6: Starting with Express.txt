@@ -11,11 +11,11 @@ Express Notes:
 
     It is convention to keep all the Express files inside an app.js.
 
-    One thing to keep in mind when making API's is status codes. See if they change automatically when doing different requests.
+    One thing to keep in mind when making API's is status codes.
 
     When thinking about using bigger projects think about how we can make all the code look the same.... Always use single quotes, etc.
 
-    Using certain Express methods can automatically set headers such as 'Content-Type' to the correct type. For example using the .json() and sending a regular js object will set the header { 'Content-Type': 'json/application' }.
+    Using certain Express methods can automatically set headers such as 'Content-Type' to the correct type. For example using the .json() and sending a regular js object will both convert that js object to json AND set the header { 'Content-Type': 'json/application' }.
 
 
 51. A higher level API conversation & REST architecture:
@@ -25,9 +25,9 @@ Express Notes:
 
     We have been using API's in a web API context but thats not the only form of API there is. The 'Application' part of API can refer to:  
         Node.js' fs or http APIs('node apis')
-        Browsers DOM JavaScript API 
+        Browsers DOM JavaScript API. For example localStorage
         With OOP, when exposing methods to the public, we're creating an API 
-        Basically any modules we create outside of the main app page, could count as an api 
+        Basically any module we create outside of the main app page, could count as an api 
     
     REST Architecture:
         This stands for REpresentational State Transfer.
@@ -36,18 +36,18 @@ Express Notes:
 
         Having a standard like REST makes it easier for us users to consume this API 
 
-        To build a RESTful API, we need to follow a could of principles: 
-            We need to seperate the API into logical resources 
-            We need to expose structured, resource-based URLs 
+        To build a RESTful API, we need to follow a couple of principles: 
+            We need to seperate the API into logical resources. Think users or tours
+            We need to expose structured, resource-based URLs. Think /users or /tours
             Use the correct http methods, for example GET or POST etc 
             Must send data as JSON (usually)
-            Must be stateless??
+            Must be stateless. Meaning the API should not have to remember past API calls or responses
 
         Resources: 
-            The key abstraction of information in REST is a resource. Therefor all the data we want to share with the API should be divided into logical resources. A resource is an object or representation of something, which has data associated to it. Any informatino can be named a resource. For example Tours or Users or Reviews.
+            The key abstraction of information in REST is a resource. Therefor all the data we want to share with the API should be divided into logical resources. A resource is an object or representation of something, which has data associated to it. Any information can be named a resource. For example Tours or Users or Reviews.
 
         Expose structured, resource based URLs: 
-            You need to make available the data, using some structured URL's that the client can make requests to. For example: https://www.natours.com/addNewTour - The 'addNewUser' here is called the 'endpoint'. This example of an endpoint is a bad example though. WE SHOULD NEVER USE A VERB IN IT. only use '/tours' and then use a POST request on that endpoint. It is common convention not to use the singular such as '/tour'.
+            You need to make available the data, using some structured URL's that the client can make requests to. For example: https://www.natours.com/addNewTour- The 'addNewTour' here is called the 'endpoint'. This is a BAD example of an endpoint though. WE SHOULD NEVER USE A VERB IN IT. To add a new tour we should only use '/tours' and then use a POST request on that endpoint. It is common convention not to use the singular such as '/tour', rather use the plural '/tours' instead.
             
         Use http methods: 
             GET, POST, PUT, PATCH, DELETE. You know how it goes.
@@ -60,7 +60,7 @@ Express Notes:
             Not just related to js. 
             Good for both humans and machines. 
             All keys in the value pair must be strings.
-            One responds standard is called JSend - this is where you create a js object and add a status value pair declaring wether is succeded or failed.
+            One response standard is called JSend - this is where you create a js object and add a status value pair declaring wether it has succeded or failed.
 
         Be Stateless: 
             In a stateless RESTful API all state is handled on the client and not on the server. This means that each req must contain ALL the info neccessary to process a certain request. The server should NOT have to remember the previous requests.
@@ -80,25 +80,26 @@ Express Notes:
     In more techincal terms we call all of the middleware which we use together in our app is The Middleware Stack. 
 
     IMORTANT!!!!! The order of the middleware as they are defined in the stack, is the order they will be executed in the thread. For example a middleware that appears first in the code will be executed before one that appears later. 
+    This might sound logical but this differs from something like useEffect() in React where the code contained inside of a useEffect hook is actually called after a components render cycle, even if the useEffect is declared first in the component.
 
-    The flow is like this: 
+    The request-response flow goes like this: 
         Incoming request is sent from client
-        => a request and response object are created by Express
-        => these objects pass through the first declared middleware, after that piece of middleware finishes running, a next() function is called and it is passed to the next piece of middleware. Each peice of middleware has this next() function, the next() is available alongside the (req, res, next) parameters when creating a function.
-        => It does this step by step until we reach the last piece of middleware where instead of next() we should use res.send(). The last middleware function is usually a route handler.
+        => request and response objects are created by Express
+        => these objects pass through the first declared middleware, once the main content of the middleware finishes running that function calls a next() function, which tells Express that that middleware is finished and the request-response objects should be passed to the next piece of middleware. Each peice of middleware has this next() function, the next() is available alongside the (req, res, next) parameters when creating a function.
+        => It does this step by step until we reach the last piece of middleware where instead of next() we should use res.send() to end this cycle. The last middleware function is usually a route handler.
 
-    IMPORTANT! So app.use() applies to a request coming in EVERYTIME a request comes in. app.get(), etc, applies only to a request on a specific route and anything not defined inside any of these runs on the single thread upon begining our instance of Node!
+    IMPORTANT! So app.use() applies to a request coming in EVERYTIME a request comes in. app.get(), etc, applies only to a request on a specific route and anything not defined inside any of these runs on the single thread upon begining our instance of Node! Not exactly true but I know what I mean.
 
-    CODE ORDER MATTERS IN EXPRESS! ONCE THE RESPONSE IS SENT THE CODE STOPS RUNNING!
+    CODE ORDER MATTERS IN EXPRESS! ONCE THE RESPONSE IS SENT THE CODE STOPS RUNNING BECAUSE THE REQUEST-RESPONSE CYCLE IS OVER!
 
     Morgan is a logging tool which we will use in our app.
 
-    Hnadlers can also be called controllers
+    Handlers can also be called controllers which are basically function.
 
 62. Creating and Mounting Multiple Routers  
     Let's say we want to create one seperate router for each of our resources. '/api/v1/tours' and '/api/v1/users'. 
 
-    Before this we used the app.route for both of them. That put both of them on the same router, that being the app object. But if we want to split these into seperate files then the best thing to do is create one router for each of the resourses.
+    Before this we used the app.route for both of them. That put both of them on the same router, that router being the app object. But if we want to split these into seperate files then the best thing to do is create one router for each of the resourses.
 
     To declare an individual router we do this: 
         const tourRouter = express.Router();
@@ -115,15 +116,15 @@ Express Notes:
         2. tourRouter.route('/').etc()
         3. app.use('/api/v1/tours', tourRouter)
 
-    We declare them in this order because the first piece of code the request actually hits is the app.use. So if we do not declare these other routes/functions/objects before calling this app.use() method, an error will be thrown.
+    We declare them in this order because the first piece of code that the request actually hits is the app.use. So if we do not declare these other routes/functions/objects before calling this app.use() method beforehand, an error will be thrown.
 
-    Step 3 - using the app.use() to call the router is called mounting a router.
+    Step 3 - using the app.use() to call the router is called mounting a router. So we mount with the app.use
 
     Doing this basically creates a sub-application for each of these resourses.
 
-    Also, we should create a server.js file. That is where our application starts and then everythin that has to do with the middleware goes into the app.js 
+    Also, we should create a server.js file. That is where our application starts and then everything that has to do with the middleware goes into the app.js 
 
-    So for this project so far he just has us use the app.listen in the server file and we export the app from the app.js BUT other things we keep in there, which are not related to express but still related to our application are: database configs, error handling stuff or environment variables.
+    So for this project so far he just has us use the app.listen in the server.js file and we export the app from the app.js into the server.js file BUT other things we keep in there are things which are not related to express but still related to our application. They are: database configs, error handling stuff or environment variables.
 
     The server file looks like this: 
 
@@ -147,5 +148,126 @@ Express Notes:
         hits the router => 
         goes through controllers => 
         ends with send from the controllers.
+
+
+64. Param Middleware 
+    Param middleware is middleware we set up in our router (or sub router) which only triggers when a certain part of the url meets the criteria. Let me explain: 
+
+    Here's how we declare it: 
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    router.param('id', (req, res, next, value) => {
+        console.log(`Tour id is: ${value});
+        next();
+    });
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    See here it triggers when there is an id part to the route. And just like middleware on app.use() we get access to the next() function, as we have to manually call that ourselves. Here however, we also get access to the value given to us in the URL parameter, bascically the same as doing(id = req.params.id;) I guess we also have this function, so that if we have code we always repeat for each of the .get().post().patch().delete(), etc, we won't have to repeat it in every peice of code seperatly.
+
+    A good use case for this is checking if the id is valid before sending it through any of the other middleware. Error handling, might be a better way of putting it.
+
+    Don't forget to end it with a next() function.
+
+
+65. Chaining Multiple Middleware Functions 
+    So for, we've only delt with requests (.get().post().patch().delete()) by using one peice of middleware in each of these - .get(getAllTours); Now we will learn how to chain multiple middleware functions together.
+
+    Lets say that we want to check if the request.body actually contains the data we need to process the request. We would do this outside of the normal .post() function because we should really save the .post() function for the writing of the data and the response.  
+
+    Chaining middleare in a post handler, for example, is easy. Lets look at this example: 
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    router.post(middlewareFunctionOne, middlewareFunctionTwo);
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    It's important to remember though, that when declaring your middleware function/handler/controller you must call the next() function.
+
+
+66. Serving Static Files 
+    Serving static files is basically serving up the files we have in the public folder.
+
+    To do so we need to tell our app to use a piece of built in express middleware. And tell that middleware where to look for these static files.
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    app.use(express.static('public'));
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    Now this is to show how we can serve static files from a folder and not a route, so in order to do that we just have to access: 
+
+    127.0.0.1:3000/overview.html
+
+    and that should do it 
+
+
+67. Environment Variables 
+    Environment variables aren't really about Express, rather Node development in general.
+
+    Node.js and Express apps can run in different 'environments'. The two most common/important being the development environment and the production environment. That is because depending on our environment we might be using different databases, or we might turn logging on/off or debugging on/off or all kinda of different settings really.
+
+    Bigger teams might use more/different environments than just development and production.
+
+    By default express sets the environment to development.
+
+    To console log these we have to go to the server.js file as the environment variables are really outside of the scope of express (or the app.js file).
+
+    console.log(app.get('env')); will return a string saying 'development' or 'production' or whatever. This one here is set by express. But Node js sets a lot of its own. To view those we can console.log(process.env);
+
+    These variables come from the 'process' core module and were set at the moment the process was started. We do not need to requre this module. It is simple available everywhere automatically.
+
+    In express many packages depend on a special variable called NODE_ENV. It's a variable thats a convention which should define wether we're in development or production mode. However Express doesnt really define this variable, so we have to do it manually. There's many ways we can do that, which wil be explained below: 
+
+        The first is when we are starting up our server, for example 'nodemon server.js'. All we need to do to change a variable when starting up is prepend what we cant to change to the start 'NODE_ENV=development nodemon server.js'. This here is not limited to the NODE_ENV variable though. We can change any environment variable or set entirely new ones here.
+
+        The best way however is to create a config file which should always be .gitignore(d) by in the top level of our file structure making a config.env file and structuring the text like this 
+
+        //////////////////////////////////////////////////////////////////////////////
+
+        NODE_ENV=development
+        PORT=3000
+
+        //////////////////////////////////////////////////////////////////////////////
+
+        Then, in order to for our node/express application to know that those variables are in there we need to install an npm package called 'dotenv'. Then in our server file we must require it and tell it where the file is. like this: 
+
+        //////////////////////////////////////////////////////////////////////////////
+
+        const dotenv = require('dotenv');
+
+        dotenv.config({ path: './config.env'});
+
+        const app = require('./app');
+
+        //////////////////////////////////////////////////////////////////////////////
+
+        We can now access this 'process' from anywhere on our app even though we only called it in the server.js. This is because the process is a global object. 
+
+        You will see here that we have to put the dotenv.config() function before we require the app in order for this to work.
+
+        If we did not, don't forget that once something is required, it gets cached anot not called again. It needs to have all the variables/information the first time it runs, that is why we need to call them in this order.
+
+        Now we have this set up we can then make scripts that make it easy for us to check out production code by going into the package.json and adding these scripts: 
+
+        ////////////////////////////////////////////////////////////////////////////// 
+
+        "scripts": {
+            "start:dev": "nodemon server.js",
+            "start:prod": "NODE_ENV=production nodemon server.js"
+        }
+
+        //////////////////////////////////////////////////////////////////////////////
+
+
+68. ESLint 
+    ESLint is basically a program that constatnly scans our code and finds coding errors or simply bad practices that it thinks are wrong. It's highly configurable so that we can finetune it to ourselves. Lint is also good for formatting.
+
+    Here's the command line argument we use for importing Jonas' LSLint and Prettier setup: 
+
+    npm i eslint@5.16.0 prettier@1.17.0 eslint-config-prettier@4.1.0 eslint-plugin-prettier@3.0.1 eslint-config-airbnb@17.1.0 eslint-plugin-node@8.0.1 eslint-plugin-import@2.17.2 eslint-plugin-jsx-a11y@6.2.1 eslint-plugin-react@7.12.4 eslint-plugin-react-hooks@4.6.0 --save-dev
 
     
