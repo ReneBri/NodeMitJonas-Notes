@@ -1,0 +1,21 @@
+What is MongoDB?
+MongoDB is a NoSQL database. Each MongoDB database can contain multiple 'collections' - think a users collection and a tours collection, etc. Each of these collections can contain one or more pieces of structured data, called a 'document'. Each document contains an object about one single entity, zum beispiel a blog post or a user, etc.
+
+    Mongo is a good document database because it is flexible and scalable AND also had good querying and indexing capabilities.
+
+    Key features:
+    1. Document based: MongoDB stores data in documents (field value pair data structures, NoSQL)
+    2. Scalable: Very easy to distribute data across multiple machines as your users and amount of data grows.
+    3. Flexibility: No document data schema requires, so each document can have a different number of value pairs and types of fields.
+    4. Performant: Thanks to features like embeddd data models, indexing, sharding, flexible documents, native duplication, etc.
+    5. MongoDB is a free and open sourse database published under the SSPL lisence.
+
+MongoDB used the BSON Data format for its data storage. It is the same as JSON but the values are typed. meaning theres no need to surround booleans or ints in quotes.
+
+Key value pairs.... The "lock" is called a field and the key is the typed value. Eg: "Field": "Value".
+
+MongoDB also has "embedded documents". For example imagine we have a product and then embedded withing that product is a "reviews" array. This is something not found in a relational database, but is possible in a NoSQL database.
+
+Embedding (AKA denormalizing): is the act of including related data into a single document. This allows quicker access and easier data models, although apparently, it isn't always the best solution. This can help with performance though.
+
+The maximum size for each BSON document is 16mb but this may increase in future. Ans each BSON document contains a unique id which acts as a key for that document. It is automatically generated when we create the document.

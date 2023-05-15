@@ -208,7 +208,7 @@ Express Notes:
 67. Environment Variables 
     Environment variables aren't really about Express, rather Node development in general.
 
-    Node.js and Express apps can run in different 'environments'. The two most common/important being the development environment and the production environment. That is because depending on our environment we might be using different databases, or we might turn logging on/off or debugging on/off or all kinda of different settings really.
+    Node.js and Express apps can run in different 'environments'. The two most common/important being the development environment and the production environment. That is because depending on our environment we might be using different databases, or we might turn logging on/off or debugging on/off or all kinds of different settings really.
 
     Bigger teams might use more/different environments than just development and production.
 
@@ -220,7 +220,7 @@ Express Notes:
 
     These variables come from the 'process' core module and were set at the moment the process was started. We do not need to requre this module. It is simple available everywhere automatically.
 
-    In express many packages depend on a special variable called NODE_ENV. It's a variable thats a convention which should define wether we're in development or production mode. However Express doesnt really define this variable, so we have to do it manually. There's many ways we can do that, which wil be explained below: 
+    In express many packages depend on a special variable called NODE_ENV. It's a variable thats a convention which should define wether we're in development or production mode. However Express doesnt really define this variable, so we have to do it manually. There's many ways we can do that, which will be explained below: 
 
         The first is when we are starting up our server, for example 'nodemon server.js'. All we need to do to change a variable when starting up is prepend what we cant to change to the start 'NODE_ENV=development nodemon server.js'. This here is not limited to the NODE_ENV variable though. We can change any environment variable or set entirely new ones here.
 
@@ -249,7 +249,7 @@ Express Notes:
 
         You will see here that we have to put the dotenv.config() function before we require the app in order for this to work.
 
-        If we did not, don't forget that once something is required, it gets cached anot not called again. It needs to have all the variables/information the first time it runs, that is why we need to call them in this order.
+        If we did not, don't forget that once something is required, it gets cached and not called again. It needs to have all the variables/information the first time it runs, that is why we need to call them in this order.
 
         Now we have this set up we can then make scripts that make it easy for us to check out production code by going into the package.json and adding these scripts: 
 
@@ -264,7 +264,7 @@ Express Notes:
 
 
 68. ESLint 
-    ESLint is basically a program that constatnly scans our code and finds coding errors or simply bad practices that it thinks are wrong. It's highly configurable so that we can finetune it to ourselves. Lint is also good for formatting.
+    ESLint is basically a program that constantly scans our code and finds coding errors or simply bad practices that it thinks are wrong. It's highly configurable so that we can finetune it to ourselves. Lint is also good for formatting.
 
     Here's the command line argument we use for importing Jonas' LSLint and Prettier setup: 
 
