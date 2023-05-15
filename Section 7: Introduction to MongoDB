@@ -19,3 +19,49 @@ MongoDB also has "embedded documents". For example imagine we have a product and
 Embedding (AKA denormalizing): is the act of including related data into a single document. This allows quicker access and easier data models, although apparently, it isn't always the best solution. This can help with performance though.
 
 The maximum size for each BSON document is 16mb but this may increase in future. Ans each BSON document contains a unique id which acts as a key for that document. It is automatically generated when we create the document.
+
+What is Mongoose?
+Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js providing a higher level of abstraction. An ODM is just a way for us to write javascript code which will interact with the database.
+
+    Mongoose allows for rapid and simple development of MongoDB database interactions.
+
+    Some features include: Schemas to modal data and relationships, easy data validation, simple query API, middleware, etc.
+
+    Mongoose Schema: Where we model our data by describing the structure of the data, default values and validation.
+
+    Mongoose Model: A wrapper for the schema, providing an interface to the database for CRUD operations. Basically the same as how Node wraps everything in another function which gives it the properties and methods like required() and __dirname, etc.
+
+Creating and using a new model is basically like makeing a new class. Let me explain with code:
+
+    First, we must create our schema:
+    ///////////////////////////////////////////////
+
+    const tourSchema = new mongoose.Schema({
+        name: String,
+        price: Number,
+        rating: Number
+    });
+
+    ///////////////////////////////////////////////
+
+    Easy enough, then we much create a new model passing in the new models name and the schema in as arguments. The first parameter here is what our documents will be stored under in the collection.
+
+    ///////////////////////////////////////////////
+
+    const Tour = mongoose.model('Tours', tourSchema);
+
+    ///////////////////////////////////////////////
+
+    And now here is why it is similar to creating a new class in JS:
+
+    ///////////////////////////////////////////////
+
+    const newTour = new Tour({
+        name: "Big Ol' Hike",
+        price: 123,
+        rating: 4.2
+    });
+
+    ///////////////////////////////////////////////
+
+    And now with that we can use whatever methods that are associated with mongooses tour model, on our newTour model.
