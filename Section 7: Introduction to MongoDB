@@ -65,3 +65,28 @@ Creating and using a new model is basically like makeing a new class. Let me exp
     ///////////////////////////////////////////////
 
     And now with that we can use whatever methods that are associated with mongooses tour model, on our newTour model.
+
+MVC architecture
+Model view controller or the MVC for short
+
+    In this architecture the model layer is concerned with the applications data & the business logic.
+
+    The controller layer: the purpose of the controller layer is to handle the applications requests, interact with models and send back responses to the client.
+
+    The ivew layer is necessary if we have a graphical interface in the app. For example if we're building a server side rendered website. Like the one in this project.
+
+    It goes like so:
+        REQUEST => ROUTER => CONTROLLER (handler function) => depending on the request the controller might have to then connect with one of the MODELS, like from the database => If there wasn't any server side rendering there, thats where the response would be sent back but since we are it then goes to the VIEW, which contains all of the presentation logic. The all of that is sent back as the response.
+
+    Application logic vs. business logic
+
+        Application logic: is all the code thats only concerned about the applications implimentation not the underlying business problem we're trying to solve. Think requests, responses, etc. It's about the apps more technical aspects. And if we have views the application logic serves as a bridge between the the model and view layer.
+
+        Business Logic is all the code that actually solves the business problem that we set out to solve... Lets say that our goal is to show tours to customers and then sell them. And the code directly related to that (business rules, how the business works and needs) is the business logic.
+            Some examples:
+            - Creating a new tour in the DB
+            - Checking a user is valid when logging in
+            - Validating user input data
+            - Ensuring only users who bought a tour can review it
+
+        Sometimes these overlap but we should do our best to keep our application logic in our controllers and our business logic in out models. Fat models/Thin Controllers is a philosophy where you offload as much as you can into the models to keep the controllers as lean as possible.
