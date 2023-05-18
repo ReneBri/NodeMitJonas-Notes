@@ -1,0 +1,180 @@
+What is MongoDB?
+MongoDB is a NoSQL database. Each MongoDB database can contain multiple 'collections' - think a users collection and a tours collection, etc. Each of these collections can contain one or more pieces of structured data, called a 'document'. Each document contains an object about one single entity, zum beispiel a blog post or a user, etc.
+
+    Mongo is a good document database because it is flexible and scalable AND also had good querying and indexing capabilities.
+
+    Key features:
+    1. Document based: MongoDB stores data in documents (field value pair data structures, NoSQL)
+    2. Scalable: Very easy to distribute data across multiple machines as your users and amount of data grows.
+    3. Flexibility: No document data schema requires, so each document can have a different number of value pairs and types of fields.
+    4. Performant: Thanks to features like embeddd data models, indexing, sharding, flexible documents, native duplication, etc.
+    5. MongoDB is a free and open sourse database published under the SSPL lisence.
+
+MongoDB used the BSON Data format for its data storage. It is the same as JSON but the values are typed. meaning theres no need to surround booleans or ints in quotes.
+
+Key value pairs.... The "lock" is called a field and the key is the typed value. Eg: "Field": "Value".
+
+MongoDB also has "embedded documents". For example imagine we have a product and then embedded withing that product is a "reviews" array. This is something not found in a relational database, but is possible in a NoSQL database.
+
+Embedding (AKA denormalizing): is the act of including related data into a single document. This allows quicker access and easier data models, although apparently, it isn't always the best solution. This can help with performance though.
+
+The maximum size for each BSON document is 16mb but this may increase in future. Ans each BSON document contains a unique id which acts as a key for that document. It is automatically generated when we create the document.
+
+What is Mongoose?
+Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js providing a higher level of abstraction. An ODM is just a way for us to write javascript code which will interact with the database.
+
+    Mongoose allows for rapid and simple development of MongoDB database interactions.
+
+    Some features include: Schemas to modal data and relationships, easy data validation, simple query API, middleware, etc.
+
+    Mongoose Schema: Where we model our data by describing the structure of the data, default values and validation.
+
+    Mongoose Model: A wrapper for the schema, providing an interface to the database for CRUD operations. Basically the same as how Node wraps everything in another function which gives it the properties and methods like required() and __dirname, etc.
+
+Creating and using a new model is basically like makeing a new class. Let me explain with code:
+
+    First, we must create our schema:
+    ///////////////////////////////////////////////
+
+    const tourSchema = new mongoose.Schema({
+        name: String,
+        price: Number,
+        rating: Number
+    });
+
+    ///////////////////////////////////////////////
+
+    Easy enough, then we much create a new model passing in the new models name and the schema in as arguments. The first parameter here is what our documents will be stored under in the collection.
+
+    ///////////////////////////////////////////////
+
+    const Tour = mongoose.model('Tours', tourSchema);
+
+    ///////////////////////////////////////////////
+
+    And now here is why it is similar to creating a new class in JS:
+
+    ///////////////////////////////////////////////
+
+    const newTour = new Tour({
+        name: "Big Ol' Hike",
+        price: 123,
+        rating: 4.2
+    });
+
+    ///////////////////////////////////////////////
+
+    And now with that we can use whatever methods that are associated with mongooses tour model, on our newTour model.
+
+MVC architecture
+Model view controller or the MVC for short
+
+    In this architecture the model layer is concerned with the applications data & the business logic.
+
+    The controller layer: the purpose of the controller layer is to handle the applications requests, interact with models and send back responses to the client.
+
+    The view layer is necessary if we have a graphical interface in the app. For example if we're building a server side rendered website. Like the one in this project.
+
+    It goes like so:
+        REQUEST => ROUTER => CONTROLLER (handler function) => depending on the request the controller might have to then connect with one of the MODELS, like from the database => If there wasn't any server side rendering there, thats where the response would be sent back but since we are it then goes to the VIEW, which contains all of the presentation logic. The all of that is sent back as the response.
+
+    Application logic vs. business logic
+
+        Application logic: is all the code thats only concerned about the applications implimentation not the underlying business problem we're trying to solve. Think requests, responses, etc. It's about the apps more technical aspects. And if we have views the application logic serves as a bridge between the the model and view layer.
+
+        Business Logic is all the code that actually solves the business problem that we set out to solve... Lets say that our goal is to show tours to customers and then sell them. And the code directly related to that (business rules, how the business works and needs) is the business logic.
+            Some examples:
+            - Creating a new tour in the DB
+            - Checking a user is valid when logging in
+            - Validating user input data
+            - Ensuring only users who bought a tour can review it
+
+        Sometimes these overlap but we should do our best to keep our application logic in our controllers and our business logic in out models. Fat models/Thin Controllers is a philosophy where you offload as much as you can into the models to keep the controllers as lean as possible.
+
+
+MongoDB Again 
+    Okay,, so MongoDB has all the typical CRUD operations. They are quite straight forward. One that I will meantion though is the Model.create() function which, if you pass an array of objects structured like your Schema, then it will loop through and save them all ito the database.
+
+    Now, let's get talking about advancing our data fetching API's. And in this section focus on filtering: 
+
+    Now I mean filtering more in the sense of, if we fetch all tours, for example, filtering out some which are over a certain price, a certain level of difficulty, etc, etc. To do this we utilize a property of our request object called the 'query object' You can access this inside of our controller with req.query. In the URL the query string comes after the parameter. And usually looks like this - .com/parameter-here?price=500&city=newyork - Express (im 90% sure its Express and not Node) parses this query string and turns it into an object. Since it is an abject and the Model.find() method takes an object as an argument, we can pass this req.query directly into the method and have it filter our results for us. This is assuming that only fields which are present in our Schema are in the query string..... Okay as a side not this isn't that true anymore apparently. From Mongoose-v7, fields unknown to the Schema are apparently just ignored and don't effect the search. But I will continue on this pervious path first because some quite interesting javascript syntax and knowledge was taught through this.
+
+    So, we're going to have fields inside of our query string which dont directly relate to filtering, but instead relate to things like sorting and pagination, etc. Because of this we are going to have to create a new object with our req.query, because we alter that one itself. In js it can be quite difficult to make a seperate copy of an object. If we do: 
+
+        const queryObj = req.query;
+
+    That would just create a pointer to the req.query object... Thats not what we're looking for. BUT the spread operator fixes this issue. So we do the following: 
+
+        const queryObj = { ...req.body };
+
+    Now we need to remove all of those value pairs in the object which do not directly relate to our Schema. For example, the sort and pagination settings: 
+
+        const excludedFields = ['page', 'sort'];
+
+    Now, really comes the interesting syntax part, which I love.
+
+        excludedFields.forEach(el => delete queryObj[el]);
+
+    So, before this i'd never seen this syntax to refer to the value of a property. Here we want to delete the queryObject.page property on the first loop through. How i would have normally though to do it is to type queryObject.el but this is wrong. The program will look for a property called el, rather than page. But if we use the square brackets instead of the dot notation then we can have the program evaluate the value of el and then use el's value rather than el itself. In this case being 'page'. 
+
+    Another big head explosion because of syntax id never seen before is the delete operator. Pretty cool.
+
+    Okay, so we've got this and this works, but its really basic and won't hold up much once we want to start doing some actually powerful and useful things. Let's say, for example, we want to search for a tour with a price less then or equal to $500. The Mongoose syntax for this is: 
+
+        Tour.find({ price { $lte: 500 } })
+
+    Lets break down solving this into a few steps: 
+    
+    First, how do we get that nested object??? Turns out its super easy. Let's revisit our query string: 
+
+        www.natours.com/tours?price=500&city=newyork
+
+    This here, when fed through Tour.find() would return all tours in New York which have a price of exactly $500. But thats no good, we want it to be less than or equal to 500. Turns out, to get this nested object all we need to do is add [gte] after the field, like this: 
+
+        www.natours.com/tours?price[lte]=500&city=newyork
+
+    When Express parses this though this is the object we get: 
+
+        { price: { lte: 500 }, city: newyork }
+
+    Thats so close in Mongoose when we want to use an operator like <= we need that dollar sign before it. We can't have this in our query string because it is apparently a security concern so we need to add this after the fact. And we do it like so: 
+
+        let queryStr = JSON.stringify(queryObj);
+
+        queryStr = queryStr.replace(
+            /\b(gte|gt|lte|lt)\b/g,
+            match => `$${match}`
+        );
+
+    Then all that is left to do is turn that string back into an object like so: 
+
+        const newQueryObj = JSON.parse(queryStr);
+
+    And we're good to start building up our DB query requests.
+
+    THE DB QUERY REQUEST CHAIN 
+
+    So, from here we want to build up our DB request chain. if we do this: 
+
+        const tours = await Tour.find(newQueryObj);
+
+    Then that would instantly trigger our .find() query. We don't want this. We want to check if the req.query object has other fields like sort, etc, and add those to the query request chain. So instead of using the await and triggering the query right away, we do this: 
+
+        let query = Tours.find(newQueryObj);
+
+    The to chain a .sort()to the end, we first check if there is a sort field in the query object and then add one accordingly. If there is no sort field we will add one anyway with a default sort selection. In this example our default sorting pattern will be for the 'createdAt' property and we will give the user the option of sorting by price (ascending);
+
+        this is our querystring127.0.0.1:3000/api/v1/tours?price[gte]=500&sort=price,averageRating
+
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);
+        } else {
+            query = query.sort('-createdAt');
+        }
+
+    Lets break this down a little bit - sort=price,averageRating - this here sets the sort to be ascending in price BUT if two prices are the same it will order them two from highest rating to lowest rating. If we wanted to flip that on its head and do decensing prices all we need to do is add a - like this: sort=-price,averageRating - Easy peasy.
+
+    Then at the end we need to call out chained DB query request by isung the await keyword like this: 
+
+        const tours = await query;
