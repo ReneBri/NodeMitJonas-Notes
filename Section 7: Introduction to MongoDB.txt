@@ -175,6 +175,76 @@ MongoDB Again
 
     Lets break this down a little bit - sort=price,averageRating - this here sets the sort to be ascending in price BUT if two prices are the same it will order them two from highest rating to lowest rating. If we wanted to flip that on its head and do decensing prices all we need to do is add a - like this: sort=-price,averageRating - Easy peasy.
 
-    Then at the end we need to call out chained DB query request by isung the await keyword like this: 
+    Then at the end we need to call out chained DB query request by using the await keyword like this: 
 
         const tours = await query;
+
+    PROJECTING means field limiting. This lets the clients receive back only the fields they want to receive in the response. This is so that if we have very data heavy data sets, we don't slow down response times by sending back oer bloated JSON responses.
+
+    In Mongoose the method for this is called "select".
+
+    We do this in postman by setting adding "fields" to the query string and then entering only the fields we want to receive.
+
+        fields=name,duration,difficulty,price 
+
+    We can also exclude sensitive data directly from the schema. This is a more secure way of protecting data. We do this by going into the Schema and giving that peice of data a property called 'select' and giving it a value of false.
+    
+    PAGINATION TIME to add pagination in the query string we use the 'page' and the 'limit' fields.
+
+    In this example 
+
+        query = query.skip(2).limit(10);
+
+    The term skip mean how many results we skip before returning data and limit means the amount we send back.
+
+    Error handling is also involved in this. we can count the amount of documents in our query with a new method on out model Tour.countDocuments(queryObject);
+
+    This returns the amount of tours we have under that specific set of filters and lets us determine if we can actually reach that page or not.
+
+
+    Another feature we can add is an aliasing route to a request that might be requested often. For example we might want to provide a route for the five best cheap tours. In this case our query would look like this: 
+
+        127.0.0.1:3000/api/v1/tours?limit=5&sort=price,ratingAverage
+
+    We then set the ailiasing up in the router like so: 
+
+        router
+            .route('/top-5-cheap')
+            .get(tourController.aliasTopTours, tourController.getAllTours);
+
+    Then in the controller we manually set the fields in the req.query like so: 
+
+        exports.aliasTopTours = (req, res, next) => {
+            req.query.limit = '5';
+            req.query.sort = 'price,-ratingAverage';
+            req.query.fields = 'name,price,ratingAverage,difficulty';
+            next();
+        };
+
+    
+DATA AGGREGATION IN MONGO DB 
+    Data aggregration is the process of reducing down data to refined results. For example a total amount of stock or the total price of a cart. We can also calculate averages or min/max values.
+
+    To do this we use Mongoose to access MongoDB's aggregation features. So when looking for what to do, look at the mongoDB docs.
+
+    The aggregation pipeline is async and we declare it like so: 
+
+         const stats = Tour.aggregate([
+            {
+                $match: { ratingAverage: { $gte: 4.5 } }
+            },
+            {
+                $group: {
+                    _id: null,
+                    averagePrice: { $avg: '$price' },
+                    minPrice: { $min: '$price' },
+                    maxPrice: { $max: '$price' }
+                }
+            }
+        ]);
+
+    Tour.aggregate being the main function where you declare the pipeline. Inside the function you set out the order of the pipeline using an array of objects. The _id property actually refers to the field which you want as the group key. Then you set out NEW fields which dont exist in the schema. These are calculations you wish to perform. the'$price' here is actually what refers to our field.
+
+    This will return an object which specifies all of our calculations. If we set the _id property to '$difficulty' it will return an array of three objects, each specific to that difficulty levels stats.
+
+    $unwind is a way what we can unwind an array and return a document for each of the elements in the array. It will basically duplicate the document as many times as there is an item in the array and return the whole arrays worth of documents to you.
