@@ -248,3 +248,126 @@ DATA AGGREGATION IN MONGO DB
     This will return an object which specifies all of our calculations. If we set the _id property to '$difficulty' it will return an array of three objects, each specific to that difficulty levels stats.
 
     $unwind is a way what we can unwind an array and return a document for each of the elements in the array. It will basically duplicate the document as many times as there is an item in the array and return the whole arrays worth of documents to you.
+
+
+VIRTUAL PROPERTIES 
+
+    These are fields which we define in our schema that will not be persistent. So they will not be saved into the DB in order to save us some space. These are good for properties that can be derived from other fields, such as a conversion from miles to kilometers.
+
+    We do this by defining it on our tour model like so: 
+
+        tourSchema.virtual('durationWeeks').get(function() {
+            return this.duration / 7;
+        });
+
+    We do this with a get function because we only run this and set these virtual properties when we get data from the database, it isn't actually saved as a possibility anywhere else. Here we used a regular function instead of an arrow function because an arrow function does not get its own 'this' keyword.
+
+    We must also let our schema know to outut this virtual property. We do this by assing in a second argument, that being an object like this: 
+
+        {
+            toJSON: { virtuals: true },
+            toObject: { virtuals: true }
+        }
+
+    This tells our schema to output virtuals to both json and an object when called on.
+
+    Virtual propertied cannot be used to query the database, only show on already existing query objects.
+
+    This is best practice as we want to keep business logic and application logic as seperated as possible. This could be good for a "show comments" button or something perhaps?
+
+
+DOCUMENT MIDDLEWARE 
+    Just like Express we can use Mongoose middleware to make something happen between two events. For example each time a new document is saved to the DB we can run a function between when the save command is issued and the actual saving of the document. Also after the saving. This is also why Mongoose middleware is called pre and post hooks. Middleware is a fundamental concept in Mongoose, just like Express.
+
+    There are four types of middleware in Mongoose: 
+        Document 
+        Query 
+        Aggregate 
+        Model 
+    
+    Document middleware is middleware that can act on the currently processed document.
+
+    Just like virtual properties we define the middleware on the Schema.
+
+        tourSchema.pre('save', function() {
+            console.log(this);
+        });
+
+    In this middleware we have access to the document that is being saved. Hence the 'this' keyword. Here it refers to the document being saved.
+
+        tourSchema.pre('save', function(next) {
+            console.log(this);
+            this.slug = slugify(this.name, { lower: true });
+            next();
+        });
+
+    Just like with Express we need to call a next() function.
+
+    Here is an example of a post middleware, post as in after, not post as in the http req post.
+
+        tourSchema.post('save', function(doc, next) {
+            console.log(doc);
+            next();
+        });
+
+    Here, rather than using the this keyword we actually receive the finished doc inside of the function parameters.
+
+QUERY MIDDLEWARE 
+
+    Query middleware allows us to run functions before or after a certain query is executed. It is very much the same as the document middleware.
+
+        tourSchema.pre(/^find/, function(next) {
+            this.find({ secretTour: { $ne: true } });
+            next();
+        });
+
+AGGREGATION MIDDLEWARE 
+
+    This allows us to add hooks before or after aggregation happens.
+
+        tourSchema.pre('aggregate', function(next) {
+            this.pipeline().unshift({
+                $match: { secretTour: { $ne: true } }
+            });
+            next();
+        });
+
+    This here will add in an object to the pipeline object which, for every aggregation request will tell it to ignore documents with a secretTour field of true.
+
+
+DATA VALIDATION WITH MONGOOSE 
+
+    Validation in this sense means that the entered values for each field are correct according to the Schema and that values have actually been entered.
+
+    On the other hand we also have sanitization, which means that we check if the data is actually clean, for security reasons, for example.
+
+    More on data sanitasation to come later in the course.
+
+    We do validation on the model. Don't forget - Fat Model, Thin Controller 
+
+    Mongoose comes with A LOT of data validation tools out of the box.
+
+    We can also build CUSTOM VALIDATORS 
+
+    A custom validator is just a simple function which should return true or false.
+
+    Here's how we define that in the schema: 
+
+        priceDiscount: {
+            type: Number,
+            validate: {
+                validator: function(value) {
+                    return value < this.price;
+                },
+                message: 'Discount cannot be more than the actual price.'
+            }
+        }
+
+    One important thing to note here is that the this keyword will only work when creating a new document. It wont work on an update. Also, we DO NOT call the function, only declare it here.
+
+    NPM actually has a bunch of validation librarys which do this job for us. The most popular being one called 'Validator'
+
+        validate: [
+            validator.isAlpha,
+            'A tour name must only contain alphabetic characters.'
+        ]
